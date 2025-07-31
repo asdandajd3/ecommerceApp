@@ -19,7 +19,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building project (Release)'
-                bat 'dotnet build --configuration Release'
+                bat 'dotnet build ECommerceApp.csproj --configuration Release'
             }
         }
 
