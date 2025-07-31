@@ -18,7 +18,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                cho 'Building project (Release)'
+                echo 'Building project (Release)'
                 bat 'cd && echo Current directory && dir'
                 bat 'dotnet build ECommerceApp.csproj --configuration Release'
             }
