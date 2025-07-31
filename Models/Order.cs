@@ -24,7 +24,9 @@ namespace ECommerceApp.Models
         public decimal TotalAmount { get; set; }
         
         public OrderStatus Status { get; set; } = OrderStatus.Pending;
-        
+        [StringLength(20)]
+        public string PaymentMethod { get; set; }
+
         public DateTime OrderDate { get; set; } = DateTime.Now;
         
         public DateTime? ShippedDate { get; set; }

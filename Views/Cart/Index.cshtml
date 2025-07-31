@@ -1,4 +1,4 @@
-@model List<Cart>
+@model List<ECommerceApp.Models.CartItem>
 @{
     ViewData["Title"] = "Giỏ hàng";
     decimal total = Model?.Sum(c => c.Product.Price * c.Quantity) ?? 0;
@@ -41,7 +41,7 @@
                                 <div class="col-md-2">
                                     <div class="input-group input-group-sm">
                                         <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(@item.Id, -1)">-</button>
-                                        <input type="number" class="form-control text-center" value="@item.Quantity" min="1" max="@item.Product.Stock" id="quantity-@item.Id">
+                                        <input type="number" class="form-control text-center" value="@item.Quantity" min="1" max="@item.Product.StockQuantity" id="quantity-@item.Id">
                                         <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity(@item.Id, 1)">+</button>
                                     </div>
                                 </div>
@@ -100,23 +100,22 @@
 </div>
 
 <script>
-function updateQuantity(cartId, change) {
-    const input = document.getElementById(`quantity-${cartId}`);
-    const newQuantity = parseInt(input.value) + change;
-    
-    if (newQuantity >= 1) {
-        // Gửi AJAX request để cập nhật số lượng
-        fetch(`/Cart/UpdateQuantity?id=${cartId}&quantity=${newQuantity}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-        .then(response => {
-            if (response.ok) {
-                location.reload();
-            }
-        });
+    function updateQuantity(cartItemId, change) {
+        const input = document.getElementById(`quantity-${cartItemId}`);
+        const newQuantity = parseInt(input.value) + change;
+
+        if (newQuantity >= 1) {
+            fetch(`/Cart/UpdateQuantity?id=${cartItemId}&quantity=${newQuantity}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                }
+            });
+        }
     }
-}
-</script> 
+</script>

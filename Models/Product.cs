@@ -19,7 +19,8 @@ namespace ECommerceApp.Models
         
         [Range(0, int.MaxValue)]
         public int StockQuantity { get; set; }
-        
+        public int Stock => StockQuantity;
+
         public string ImageUrl { get; set; }
         
         public bool IsActive { get; set; } = true;

@@ -1,4 +1,4 @@
-@model List<Order>
+@model List<ECommerceApp.Models.Order>
 @{
     ViewData["Title"] = "Đơn hàng của tôi";
 }
@@ -18,7 +18,9 @@
                             <small class="text-muted">Đặt ngày: @order.OrderDate.ToString("dd/MM/yyyy HH:mm")</small>
                         </div>
                         <div class="col-md-6 text-end">
-                            <span class="badge @GetStatusBadgeClass(order.Status)">@GetStatusText(order.Status)</span>
+                            <span class="badge @GetStatusBadgeClass(order.Status)">
+                                @GetStatusText(order.Status)
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -26,12 +28,12 @@
                     <div class="row">
                         <div class="col-md-8">
                             <h6>Thông tin giao hàng:</h6>
-                            <p><strong>Người nhận:</strong> @order.CustomerName</p>
-                            <p><strong>Số điện thoại:</strong> @order.PhoneNumber</p>
+                            <p><strong>Người nhận:</strong> @order.User?.FullName</p>
+                            <p><strong>Số điện thoại:</strong> @order.Phone</p>
                             <p><strong>Địa chỉ:</strong> @order.ShippingAddress</p>
-                            @if (!string.IsNullOrEmpty(order.Email))
+                            @if (!string.IsNullOrEmpty(order.User?.Email))
                             {
-                                <p><strong>Email:</strong> @order.Email</p>
+                                <p><strong>Email:</strong> @order.User.Email</p>
                             }
                             @if (!string.IsNullOrEmpty(order.Notes))
                             {
@@ -45,8 +47,8 @@
                                 @foreach (var detail in order.OrderDetails)
                                 {
                                     <div class="d-flex justify-content-between mb-1">
-                                        <span>@detail.Product.Name x @detail.Quantity</span>
-                                        <span>@detail.Price.ToString("N0") VNĐ</span>
+                                        <span>@detail.Product?.Name x @detail.Quantity</span>
+                                        <span>@detail.TotalPrice.ToString("N0") VNĐ</span>
                                     </div>
                                 }
                                 <hr>
@@ -62,12 +64,14 @@
                     <div class="row">
                         <div class="col-md-6">
                             <small class="text-muted">
-                                <strong>Phương thức thanh toán:</strong> 
+                                <strong>Phương thức thanh toán:</strong>
                                 @(order.PaymentMethod == "cod" ? "Thanh toán khi nhận hàng" : "Chuyển khoản ngân hàng")
                             </small>
                         </div>
                         <div class="col-md-6 text-end">
-                            <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-outline-primary btn-sm">Xem chi tiết</a>
+                            <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-outline-primary btn-sm">
+                                Xem chi tiết
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -87,29 +91,29 @@
 </div>
 
 @functions {
-    private string GetStatusBadgeClass(string status)
+    private string GetStatusBadgeClass(ECommerceApp.Models.OrderStatus status)
     {
-        return status?.ToLower() switch
+        return status switch
         {
-            "pending" => "bg-warning",
-            "confirmed" => "bg-info",
-            "shipping" => "bg-primary",
-            "delivered" => "bg-success",
-            "cancelled" => "bg-danger",
+            ECommerceApp.Models.OrderStatus.Pending => "bg-warning",
+            ECommerceApp.Models.OrderStatus.Confirmed => "bg-info",
+            ECommerceApp.Models.OrderStatus.Shipped => "bg-primary",
+            ECommerceApp.Models.OrderStatus.Delivered => "bg-success",
+            ECommerceApp.Models.OrderStatus.Cancelled => "bg-danger",
             _ => "bg-secondary"
         };
     }
 
-    private string GetStatusText(string status)
+    private string GetStatusText(ECommerceApp.Models.OrderStatus status)
     {
-        return status?.ToLower() switch
+        return status switch
         {
-            "pending" => "Chờ xác nhận",
-            "confirmed" => "Đã xác nhận",
-            "shipping" => "Đang giao",
-            "delivered" => "Đã giao",
-            "cancelled" => "Đã hủy",
+            ECommerceApp.Models.OrderStatus.Pending => "Chờ xác nhận",
+            ECommerceApp.Models.OrderStatus.Confirmed => "Đã xác nhận",
+            ECommerceApp.Models.OrderStatus.Shipped => "Đang giao",
+            ECommerceApp.Models.OrderStatus.Delivered => "Đã giao",
+            ECommerceApp.Models.OrderStatus.Cancelled => "Đã hủy",
             _ => "Không xác định"
         };
     }
-} 
+}

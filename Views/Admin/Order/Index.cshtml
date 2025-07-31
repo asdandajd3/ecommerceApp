@@ -1,4 +1,4 @@
-@model List<Order>
+@model List<ECommerceApp.Models.Order>
 @{
     ViewData["Title"] = "Quản lý đơn hàng - Admin";
 }
@@ -39,8 +39,8 @@
                             {
                                 <tr>
                                     <td>#@order.Id</td>
-                                    <td>@order.CustomerName</td>
-                                    <td>@order.PhoneNumber</td>
+                                    <td>@order.User?.FullName</td>
+                                    <td>@order.Phone</td>
                                     <td>@order.TotalAmount.ToString("N0") VNĐ</td>
                                     <td>
                                         <span class="badge @GetStatusBadgeClass(order.Status)">
@@ -57,11 +57,11 @@
                                                 <span class="visually-hidden">Toggle Dropdown</span>
                                             </button>
                                             <ul class="dropdown-menu">
-                                                <li><a class="dropdown-item" href="#" onclick="updateStatus(@order.Id, 'confirmed')">Xác nhận</a></li>
-                                                <li><a class="dropdown-item" href="#" onclick="updateStatus(@order.Id, 'shipping')">Đang giao</a></li>
-                                                <li><a class="dropdown-item" href="#" onclick="updateStatus(@order.Id, 'delivered')">Đã giao</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="updateStatus(@order.Id, 'Confirmed')">Xác nhận</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="updateStatus(@order.Id, 'Shipped')">Đang giao</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="updateStatus(@order.Id, 'Delivered')">Đã giao</a></li>
                                                 <li><hr class="dropdown-divider"></li>
-                                                <li><a class="dropdown-item text-danger" href="#" onclick="updateStatus(@order.Id, 'cancelled')">Hủy đơn</a></li>
+                                                <li><a class="dropdown-item text-danger" href="#" onclick="updateStatus(@order.Id, 'Cancelled')">Hủy đơn</a></li>
                                             </ul>
                                         </div>
                                     </td>
@@ -82,60 +82,60 @@
 </div>
 
 <script>
-function updateStatus(orderId, status) {
-    const statusText = {
-        'confirmed': 'xác nhận',
-        'shipping': 'đang giao',
-        'delivered': 'đã giao',
-        'cancelled': 'hủy'
-    };
-    
-    if (confirm(`Bạn có chắc muốn ${statusText[status]} đơn hàng #${orderId}?`)) {
-        fetch(`/AdminOrder/UpdateStatus`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                orderId: orderId,
-                status: status
+    function updateStatus(orderId, status) {
+        const statusText = {
+            'Confirmed': 'xác nhận',
+            'Shipped': 'đang giao',
+            'Delivered': 'đã giao',
+            'Cancelled': 'hủy'
+        };
+
+        if (confirm(`Bạn có chắc muốn ${statusText[status]} đơn hàng #${orderId}?`)) {
+            fetch(`/AdminOrder/UpdateStatus`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    orderId: orderId,
+                    status: status
+                })
             })
-        })
-        .then(response => {
-            if (response.ok) {
-                location.reload();
-            } else {
-                alert('Có lỗi xảy ra khi cập nhật trạng thái.');
-            }
-        });
+            .then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Có lỗi xảy ra khi cập nhật trạng thái.');
+                }
+            });
+        }
     }
-}
 </script>
 
 @functions {
-    private string GetStatusBadgeClass(string status)
+    private string GetStatusBadgeClass(ECommerceApp.Models.OrderStatus status)
     {
-        return status?.ToLower() switch
+        return status switch
         {
-            "pending" => "bg-warning",
-            "confirmed" => "bg-info",
-            "shipping" => "bg-primary",
-            "delivered" => "bg-success",
-            "cancelled" => "bg-danger",
+            ECommerceApp.Models.OrderStatus.Pending => "bg-warning",
+            ECommerceApp.Models.OrderStatus.Confirmed => "bg-info",
+            ECommerceApp.Models.OrderStatus.Shipped => "bg-primary",
+            ECommerceApp.Models.OrderStatus.Delivered => "bg-success",
+            ECommerceApp.Models.OrderStatus.Cancelled => "bg-danger",
             _ => "bg-secondary"
         };
     }
 
-    private string GetStatusText(string status)
+    private string GetStatusText(ECommerceApp.Models.OrderStatus status)
     {
-        return status?.ToLower() switch
+        return status switch
         {
-            "pending" => "Chờ xác nhận",
-            "confirmed" => "Đã xác nhận",
-            "shipping" => "Đang giao",
-            "delivered" => "Đã giao",
-            "cancelled" => "Đã hủy",
+            ECommerceApp.Models.OrderStatus.Pending => "Chờ xác nhận",
+            ECommerceApp.Models.OrderStatus.Confirmed => "Đã xác nhận",
+            ECommerceApp.Models.OrderStatus.Shipped => "Đang giao",
+            ECommerceApp.Models.OrderStatus.Delivered => "Đã giao",
+            ECommerceApp.Models.OrderStatus.Cancelled => "Đã hủy",
             _ => "Không xác định"
         };
     }
-} 
+}
