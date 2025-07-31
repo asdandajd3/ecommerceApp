@@ -1,0 +1,103 @@
+@model List<Product>
+@{
+    ViewData["Title"] = "Danh sách sản phẩm";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">Danh sách sản phẩm</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Bộ lọc</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get">
+                        <div class="mb-3">
+                            <label class="form-label">Danh mục</label>
+                            <select name="categoryId" class="form-select">
+                                <option value="">Tất cả</option>
+                                <!-- Categories sẽ được load từ ViewBag -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Giá</label>
+                            <select name="priceRange" class="form-select">
+                                <option value="">Tất cả</option>
+                                <option value="0-100000">Dưới 100k</option>
+                                <option value="100000-500000">100k - 500k</option>
+                                <option value="500000-1000000">500k - 1M</option>
+                                <option value="1000000-999999999">Trên 1M</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Lọc</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="row">
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var product in Model)
+                    {
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100">
+                                @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                {
+                                    <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name" style="height: 200px; object-fit: cover;">
+                                }
+                                else
+                                {
+                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                        <span class="text-muted">Không có hình</span>
+                                    </div>
+                                }
+                                <div class="card-body">
+                                    <h5 class="card-title">@product.Name</h5>
+                                    <p class="card-text text-truncate">@product.Description</p>
+                                    <p class="card-text"><strong class="text-danger">@product.Price.ToString("N0") VNĐ</strong></p>
+                                    @if (product.Stock > 0)
+                                    {
+                                        <small class="text-success">Còn hàng: @product.Stock</small>
+                                    }
+                                    else
+                                    {
+                                        <small class="text-danger">Hết hàng</small>
+                                    }
+                                </div>
+                                <div class="card-footer">
+                                    <div class="d-flex justify-content-between">
+                                        <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-outline-primary btn-sm">Chi tiết</a>
+                                        @if (product.Stock > 0)
+                                        {
+                                            <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@product.Id" class="btn btn-success btn-sm">Thêm vào giỏ</a>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-secondary btn-sm" disabled>Hết hàng</button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-12">
+                        <div class="alert alert-info text-center">
+                            <p>Không tìm thấy sản phẩm nào.</p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div> 
