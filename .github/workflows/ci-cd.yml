@@ -1,0 +1,36 @@
+name: .NET Core CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '7.0.x' # ho?c phiên b?n phù h?p v?i project c?a b?n
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore
+
+    - name: Test (n?u có Unit Test)
+      run: dotnet test --no-build --verbosity normal
+
+    - name: Publish
+      run: dotnet publish -c Release -o ./publish
+
+    # Optional: Deploy to IIS, FTP, Azure, etc.
+    # - name: Deploy
+    #   run: echo "Tri?n khai tùy môi tru?ng"
